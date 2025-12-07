@@ -1,19 +1,20 @@
-# Python Prime Enumerator
+# Python Prime Tools
 
-Simple interactive CLI that enumerates every prime below an integer you provide. It uses a square-root bounded trial division (`is_prime`) defined in `prime.py`, so it stays easy to understand and portable.
+This folder contains two small command-line utilities for listing primes below a number you choose.
 
 ## Requirements
-- Python 3.8+ (only uses stdlib `math`)
+- Python 3.8+ (only standard library modules)
 
-## Running the script
+## `prime.py` (minimal interactive tool)
+- Trial-division checker suitable for quick exploration
+- Prompts repeatedly until you confirm exit with `Ctrl+C` followed by `y`
+
+Run it from this directory:
 ```bash
-cd deploy/python
 python prime.py
 ```
 
-You will be prompted for an integer upper bound. The script prints the list of all primes less than that number and the total count. Non-integer input triggers a friendly validation message. Press `Ctrl+C` to exit; you will be asked to confirm before quitting.
-
-### Example session
+Sample session:
 ```
 Enter an integer: 20
 Primes: [2, 3, 5, 7, 11, 13, 17, 19]
@@ -23,6 +24,37 @@ Are you sure you want to go? (y/n): y
 Goodbye!
 ```
 
-## Implementation Notes
-- `is_prime(n)` short-circuits for numbers < 2 and only tests divisors up to `sqrt(n)`.
-- The generator comprehension `[n for n in range(_primes) if is_prime(n)]` keeps the script compact; swap in a sieve if you need better performance for large upper bounds.
+## `eratosthenes.py` (faster CLI with flags)
+- Uses the Sieve of Eratosthenes for better performance on large limits
+- Supports non-interactive mode plus an optional interactive loop
+
+Basic usage:
+```bash
+# Interactive mode
+python eratosthenes.py
+
+# Direct run with flags
+python eratosthenes.py --limit 1000 --count-only
+```
+
+Key options:
+- `--limit / -l`: upper bound (exclusive). Omit it to stay in the prompt.
+- `--count-only / -c`: show just how many primes were found.
+
+Example output:
+```
+$ python eratosthenes.py --limit 20
+Primes: [2, 3, 5, 7, 11, 13, 17, 19]
+Total primes: 8
+
+$ python eratosthenes.py --limit 1_000 --count-only
+Total primes: 168
+
+$ python eratosthenes.py
+Enter an integer limit (exclusive): 50
+Primes: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
+Total primes: 15
+Enter an integer limit (exclusive): ^C
+Are you sure you want to go? (y/n): y
+Goodbye!
+```
