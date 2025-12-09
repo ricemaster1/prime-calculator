@@ -66,21 +66,6 @@ def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
     current_count_only = count_only
     valid_formats = {"plain", "json", "csv"}
 
-    def handle_limit(raw_value: str) -> None:
-        try:
-            limit_value = int(raw_value)
-        except ValueError:
-            notify_user("Invalid input. Please enter a valid integer.", current_fmt)
-            return
-
-        try:
-            primes = sieve_primes(limit_value)
-        except ValueError as exc:
-            notify_user(str(exc), current_fmt)
-            return
-
-        print_results(primes, count_only=current_count_only, fmt=current_fmt)
-
     while True:
         try:
             user_input = prompt_user("Enter an integer limit (exclusive): ", current_fmt).strip()
@@ -112,22 +97,26 @@ def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
                     notify_user("Usage: /count-only <on|off>", current_fmt)
                 continue
 
-            if user_input.startswith(("/limit", "/l")):
-                parts = user_input.split(maxsplit=1)
-                if len(parts) == 2:
-                    handle_limit(parts[1])
-                else:
-                    notify_user("Usage: /limit <integer>", current_fmt)
-                continue
-
             if user_input in {"/help", "/h"}:
                 notify_user(
-                    "Commands: /format or /f <plain|json|csv>, /count-only or /c <on|off>, /limit or /l <int>",
+                    "Commands: /format or /f <plain|json|csv>, /count-only or /c <on|off>",
                     current_fmt,
                 )
                 continue
 
-            handle_limit(user_input)
+            try:
+                limit_value = int(user_input)
+            except ValueError:
+                notify_user("Invalid input. Please enter a valid integer.", current_fmt)
+                continue
+
+            try:
+                primes = sieve_primes(limit_value)
+            except ValueError as exc:
+                notify_user(str(exc), current_fmt)
+                continue
+
+            print_results(primes, count_only=current_count_only, fmt=current_fmt)
 
         except KeyboardInterrupt:
             should_leave = prompt_user("\nAre you sure you want to go? (y/n): ", current_fmt).strip().lower()

@@ -46,7 +46,6 @@ Key options:
 While in the interactive loop you can adjust options on the fly:
 - `/format <plain|json|csv>` or `/f <option>`: switch output format.
 - `/count-only <on|off>` or `/c <on|off>`: toggle whether the prime list is shown.
-- `/limit <integer>` or `/l <integer>`: run a calculation immediately using the provided upper bound.
 - `/help` or `/h`: display the command summary.
 
 Example output:
