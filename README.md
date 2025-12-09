@@ -34,7 +34,7 @@ Basic usage:
 python eratosthenes.py
 
 # Direct run with flags
-python eratosthenes.py --limit 1000 --count-only
+python eratosthenes.py --count-only -f csv
 ```
 
 Key options:
