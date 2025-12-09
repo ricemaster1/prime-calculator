@@ -1,6 +1,7 @@
 import argparse
+import json
 from math import isqrt
-from typing import List
+from typing import Any, Dict, List
 
 def sieve_primes(limit: int) -> List[int]:
     """Return every prime less than ``limit`` using the Sieve of Eratosthenes."""
@@ -20,14 +21,23 @@ def sieve_primes(limit: int) -> List[int]:
 
     return [value for value, prime_flag in enumerate(sieve) if prime_flag]
 
-def print_results(primes: List[int], count_only: bool = False) -> None:
+def print_results(primes: List[int], *, count_only: bool = False, fmt: str = "plain") -> None:
+    count = len(primes)
+
+    if fmt == "json":
+        payload: Dict[str, Any] = {"count": count}
+        if not count_only:
+            payload["primes"] = primes
+        print(json.dumps(payload))
+        return
+
     if count_only:
-        print(f"Total primes: {len(primes)}")
+        print(f"Total primes: {count}")
     else:
         print(f"Primes: {primes}")
-        print(f"Total primes: {len(primes)}")
+        print(f"Total primes: {count}")
 
-def run_interactive(count_only: bool = False) -> None:
+def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
     """Keep prompting the user for a limit until they quit."""
     while True:
         try:
@@ -44,7 +54,7 @@ def run_interactive(count_only: bool = False) -> None:
                 print(exc)
                 continue
 
-            print_results(primes, count_only=count_only)
+            print_results(primes, count_only=count_only, fmt=fmt)
 
         except KeyboardInterrupt:
             should_leave = input("\nAre you sure you want to go? (y/n): ").strip().lower()
@@ -70,6 +80,14 @@ def parse_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
+        "-f",
+        "--format",
+        choices=["plain", "json"],
+        default="plain",
+        help="Output format: 'plain' for human-readable text, 'json' for JSON output.",
+    )
+
+    parser.add_argument(
         "-v",
         "--version",
         action="version",
@@ -81,7 +99,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     if args.limit is None:
-        run_interactive(count_only=args.count_only)
+        run_interactive(count_only=args.count_only, fmt=args.format)
         return
 
     try:
@@ -90,7 +108,7 @@ def main() -> None:
         print(f"Error: {exc}")
         return
 
-    print_results(primes, count_only=args.count_only)
+    print_results(primes, count_only=args.count_only, fmt=args.format)
 
 if __name__ == "__main__":
     main()
