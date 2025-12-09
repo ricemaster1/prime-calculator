@@ -41,9 +41,9 @@ Key options:
 - `--version / -v`: Show the version number and exit.
 - `--limit / -l`: upper bound (exclusive). Omit it to stay in the prompt.
 - `--count-only / -c`: show just how many primes were found.
-- `--format / -f`: pick `plain` (default) or `json`. Interactive prompts/errors move to stderr automatically in JSON mode so stdout remains machine-friendly.
+- `--format / -f`: pick `plain` (default), `json`, or `csv`. JSON mode routes prompts/errors to stderr so stdout stays machine-friendly; CSV prints comma-separated primes followed by the count.
 
-While in the interactive loop you can switch formats without restarting by typing `/format plain` or `/format json` at any prompt.
+While in the interactive loop you can switch formats without restarting by typing `/format plain`, `/format json`, or `/format csv` at any prompt.
 
 Example output:
 ```

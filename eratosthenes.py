@@ -32,6 +32,14 @@ def print_results(primes: List[int], *, count_only: bool = False, fmt: str = "pl
         print(json.dumps(payload))
         return
 
+    if fmt == "csv":
+        if count_only:
+            print(count)
+        else:
+            print(",".join(str(value) for value in primes))
+            print(count)
+        return
+
     if count_only:
         print(f"Total primes: {count}")
     else:
@@ -55,7 +63,7 @@ def notify_user(message: str, fmt: str) -> None:
 def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
     """Keep prompting the user for a limit until they quit."""
     current_fmt = fmt
-    valid_formats = {"plain", "json"}
+    valid_formats = {"plain", "json", "csv"}
 
     while True:
         try:
@@ -67,7 +75,7 @@ def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
                     current_fmt = parts[1]
                     notify_user(f"Switched output format to {current_fmt}.", current_fmt)
                 else:
-                    notify_user("Usage: /format <plain|json>", current_fmt)
+                    notify_user("Usage: /format <plain|json|csv>", current_fmt)
                 continue
 
             try:
@@ -110,9 +118,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-f",
         "--format",
-        choices=["plain", "json"],
+        choices=["plain", "json", "csv"],
         default="plain",
-        help="Output format: 'plain' for human-readable text, 'json' for JSON output.",
+        help="Output format: 'plain' for human-readable text, 'json' for JSON, 'csv' for comma-separated primes.",
     )
 
     parser.add_argument(
