@@ -43,7 +43,11 @@ Key options:
 - `--count-only / -c`: show just how many primes were found.
 - `--format / -f`: pick `plain` (default), `json`, or `csv`. JSON mode routes prompts/errors to stderr so stdout stays machine-friendly; CSV prints comma-separated primes followed by the count.
 
-While in the interactive loop you can switch formats without restarting by typing `/format plain`, `/format json`, or `/format csv` at any prompt.
+While in the interactive loop you can adjust options on the fly:
+- `/format <plain|json|csv>` or `/f <option>`: switch output format.
+- `/count-only <on|off>` or `/c <on|off>`: toggle whether the prime list is shown.
+- `/limit <integer>` or `/l <integer>`: run a calculation immediately using the provided upper bound.
+- `/help` or `/h`: display the command summary.
 
 Example output:
 ```

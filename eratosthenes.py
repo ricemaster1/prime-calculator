@@ -63,34 +63,71 @@ def notify_user(message: str, fmt: str) -> None:
 def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
     """Keep prompting the user for a limit until they quit."""
     current_fmt = fmt
+    current_count_only = count_only
     valid_formats = {"plain", "json", "csv"}
+
+    def handle_limit(raw_value: str) -> None:
+        try:
+            limit_value = int(raw_value)
+        except ValueError:
+            notify_user("Invalid input. Please enter a valid integer.", current_fmt)
+            return
+
+        try:
+            primes = sieve_primes(limit_value)
+        except ValueError as exc:
+            notify_user(str(exc), current_fmt)
+            return
+
+        print_results(primes, count_only=current_count_only, fmt=current_fmt)
 
     while True:
         try:
             user_input = prompt_user("Enter an integer limit (exclusive): ", current_fmt).strip()
 
-            if user_input.startswith("/format"):
+            if user_input.startswith(("/format", "/f")):
                 parts = user_input.split(maxsplit=1)
-                if len(parts) == 2 and parts[1] in valid_formats:
-                    current_fmt = parts[1]
-                    notify_user(f"Switched output format to {current_fmt}.", current_fmt)
+                if len(parts) == 2:
+                    desired = parts[1].lower()
+                    if desired in valid_formats:
+                        current_fmt = desired
+                        notify_user(f"Switched output format to {current_fmt}.", current_fmt)
+                    else:
+                        notify_user("Usage: /format <plain|json|csv>", current_fmt)
                 else:
                     notify_user("Usage: /format <plain|json|csv>", current_fmt)
                 continue
 
-            try:
-                limit = int(user_input)
-            except ValueError:
-                notify_user("Invalid input. Please enter a valid integer.", current_fmt)
+            if user_input.startswith(("/count-only", "/c")):
+                parts = user_input.split(maxsplit=1)
+                if len(parts) == 2:
+                    setting = parts[1].lower()
+                    if setting in {"on", "off"}:
+                        current_count_only = setting == "on"
+                        status = "enabled" if current_count_only else "disabled"
+                        notify_user(f"Count-only output {status}.", current_fmt)
+                    else:
+                        notify_user("Usage: /count-only <on|off>", current_fmt)
+                else:
+                    notify_user("Usage: /count-only <on|off>", current_fmt)
                 continue
 
-            try:
-                primes = sieve_primes(limit)
-            except ValueError as exc:
-                notify_user(str(exc), current_fmt)
+            if user_input.startswith(("/limit", "/l")):
+                parts = user_input.split(maxsplit=1)
+                if len(parts) == 2:
+                    handle_limit(parts[1])
+                else:
+                    notify_user("Usage: /limit <integer>", current_fmt)
                 continue
 
-            print_results(primes, count_only=count_only, fmt=current_fmt)
+            if user_input in {"/help", "/h"}:
+                notify_user(
+                    "Commands: /format or /f <plain|json|csv>, /count-only or /c <on|off>, /limit or /l <int>",
+                    current_fmt,
+                )
+                continue
+
+            handle_limit(user_input)
 
         except KeyboardInterrupt:
             should_leave = prompt_user("\nAre you sure you want to go? (y/n): ", current_fmt).strip().lower()
