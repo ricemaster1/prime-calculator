@@ -68,6 +68,14 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Only print the count of primes, omitting the list itself.",
     )
+
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="eratosthenes 1.0.0",
+        help="Show the version number and exit.",
+    )
     return parser.parse_args()
 
 def main() -> None:
