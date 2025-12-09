@@ -129,12 +129,6 @@ def parse_args() -> argparse.Namespace:
         description="Enumerate primes below the provided limit using the Sieve of Eratosthenes."
     )
     parser.add_argument(
-        "-l",
-        "--limit",
-        type=int,
-        help="Upper bound (exclusive) for the primes to enumerate. Defaults to interactive mode when omitted.",
-    )
-    parser.add_argument(
         "-c",
         "--count-only",
         action="store_true",
