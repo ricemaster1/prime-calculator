@@ -1,5 +1,6 @@
 import argparse
 import json
+import sys
 from math import isqrt
 from typing import Any, Dict, List
 
@@ -37,29 +38,56 @@ def print_results(primes: List[int], *, count_only: bool = False, fmt: str = "pl
         print(f"Primes: {primes}")
         print(f"Total primes: {count}")
 
+def prompt_user(message: str, fmt: str) -> str:
+    if fmt == "json":
+        sys.stderr.write(message)
+        sys.stderr.flush()
+        return input()
+    return input(message)
+
+def notify_user(message: str, fmt: str) -> None:
+    stream = sys.stderr if fmt == "json" else None
+    if stream:
+        print(message, file=stream)
+    else:
+        print(message)
+
 def run_interactive(*, count_only: bool = False, fmt: str = "plain") -> None:
     """Keep prompting the user for a limit until they quit."""
+    current_fmt = fmt
+    valid_formats = {"plain", "json"}
+
     while True:
         try:
-            user_input = input("Enter an integer limit (exclusive): ")
+            user_input = prompt_user("Enter an integer limit (exclusive): ", current_fmt).strip()
+
+            if user_input.startswith("/format"):
+                parts = user_input.split(maxsplit=1)
+                if len(parts) == 2 and parts[1] in valid_formats:
+                    current_fmt = parts[1]
+                    notify_user(f"Switched output format to {current_fmt}.", current_fmt)
+                else:
+                    notify_user("Usage: /format <plain|json>", current_fmt)
+                continue
+
             try:
                 limit = int(user_input)
             except ValueError:
-                print("Invalid input. Please enter a valid integer.")
+                notify_user("Invalid input. Please enter a valid integer.", current_fmt)
                 continue
 
             try:
                 primes = sieve_primes(limit)
             except ValueError as exc:
-                print(exc)
+                notify_user(str(exc), current_fmt)
                 continue
 
-            print_results(primes, count_only=count_only, fmt=fmt)
+            print_results(primes, count_only=count_only, fmt=current_fmt)
 
         except KeyboardInterrupt:
-            should_leave = input("\nAre you sure you want to go? (y/n): ").strip().lower()
+            should_leave = prompt_user("\nAre you sure you want to go? (y/n): ", current_fmt).strip().lower()
             if should_leave == "y":
-                print("Goodbye!")
+                notify_user("Goodbye!", current_fmt)
                 break
 
 def parse_args() -> argparse.Namespace:
@@ -105,7 +133,7 @@ def main() -> None:
     try:
         primes = sieve_primes(args.limit)
     except ValueError as exc:
-        print(f"Error: {exc}")
+        notify_user(f"Error: {exc}", args.format)
         return
 
     print_results(primes, count_only=args.count_only, fmt=args.format)

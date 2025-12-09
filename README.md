@@ -38,8 +38,12 @@ python eratosthenes.py --limit 1000 --count-only
 ```
 
 Key options:
+- `--version / -v`: Show the version number and exit.
 - `--limit / -l`: upper bound (exclusive). Omit it to stay in the prompt.
 - `--count-only / -c`: show just how many primes were found.
+- `--format / -f`: pick `plain` (default) or `json`. Interactive prompts/errors move to stderr automatically in JSON mode so stdout remains machine-friendly.
+
+While in the interactive loop you can switch formats without restarting by typing `/format plain` or `/format json` at any prompt.
 
 Example output:
 ```
